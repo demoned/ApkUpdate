@@ -24,7 +24,7 @@ public class DownloadManager {
     /**
      * 上下文
      */
-    private static Context context;
+    private Context context;
     /**
      * 要更新apk的下载地址
      */
@@ -85,7 +85,11 @@ public class DownloadManager {
      */
     private UpdateDialog dialog;
 
-    private static DownloadManager manager;
+    private volatile static DownloadManager manager;
+
+    public DownloadManager(Context context) {
+        this.context = context;
+    }
 
     /**
      * 框架初始化
@@ -94,11 +98,10 @@ public class DownloadManager {
      * @return {@link DownloadManager}
      */
     public static DownloadManager getInstance(Context context) {
-        DownloadManager.context = context;
         if (manager == null) {
             synchronized (DownloadManager.class) {
                 if (manager == null) {
-                    manager = new DownloadManager();
+                    manager = new DownloadManager(context);
                 }
             }
         }
@@ -329,7 +332,6 @@ public class DownloadManager {
      */
     public void download() {
         if (!checkParams()) {
-            //参数设置出错....
             return;
         }
         if (checkVersionCode()) {
@@ -398,7 +400,7 @@ public class DownloadManager {
      * 如果小于等于1则直接启动服务下载
      */
     private boolean checkVersionCode() {
-        //如果设置了小于的versionCode 你不是在写bug就是脑子瓦塌拉
+        //如果设置了小于的versionCode
         if (apkVersionCode < 1) {
             apkVersionCode = 1;
             LogUtil.e(TAG, "apkVersionCode can not be < 1 !");

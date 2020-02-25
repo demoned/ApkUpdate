@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -23,22 +24,19 @@ import com.demons.update.utils.LogUtil;
 import com.demons.update.utils.NotificationUtil;
 
 import java.io.File;
-import java.util.List;
 
-import androidx.annotation.Nullable;
 
 /**
  * apk 下载服务
  */
 public final class DownloadService extends Service implements OnDownloadListener {
-
-    private static final String TAG = Constant.TAG + "DownloadService";
+    private static final String TAG = Constant.TAG + DownloadService.class.getSimpleName();
     private int smallIcon;
     private String apkUrl;
     private String apkName;
     private String downloadPath;
     private String authorities;
-    private List<OnDownloadListener> listeners;
+    private OnDownloadListener onDownloadListener;
     private boolean showNotification;
     private boolean showBgdToast;
     private boolean jumpInstallPage;
@@ -73,7 +71,7 @@ public final class DownloadService extends Service implements OnDownloadListener
         //创建apk文件存储文件夹
         FileUtil.createDirDirectory(downloadPath);
         UpdateConfiguration configuration = downloadManager.getConfiguration();
-        listeners = configuration.getOnDownloadListener();
+        onDownloadListener = configuration.getOnDownloadListener();
         showNotification = configuration.isShowNotification();
         showBgdToast = configuration.isShowBgdToast();
         jumpInstallPage = configuration.isJumpInstallPage();
@@ -137,20 +135,19 @@ public final class DownloadService extends Service implements OnDownloadListener
     }
 
     @Override
-    public void downloading(int max, int progress) {
-        LogUtil.i(TAG, "max: " + max + " --- progress: " + progress);
+    public void downloading(int progressPercent) {
+        LogUtil.i(TAG, " --- progressPercent: " + progressPercent);
         if (showNotification) {
             //优化通知栏更新，减少通知栏更新次数
-            int curr = (int) (progress / (double) max * 100.0);
-            if (curr != lastProgress) {
-                lastProgress = curr;
+            if (progressPercent != lastProgress) {
+                lastProgress = progressPercent;
                 String downloading = getResources().getString(R.string.start_downloading);
-                String content = curr < 0 ? "" : curr + "%";
+                String content = progressPercent < 0 ? "" : progressPercent + "%";
                 NotificationUtil.showProgressNotification(this, smallIcon, downloading,
-                        content, max == -1 ? -1 : 100, curr);
+                        content, 100, progressPercent);
             }
         }
-        handler.obtainMessage(2, max, progress).sendToTarget();
+        handler.obtainMessage(2, progressPercent).sendToTarget();
     }
 
     @Override
@@ -158,7 +155,7 @@ public final class DownloadService extends Service implements OnDownloadListener
         LogUtil.d(TAG, "done: 文件已下载至" + apk.toString());
         downloadManager.setState(false);
         //如果是android Q（api=29）及其以上版本showNotification=false也会发送一个下载完成通知
-        if (showNotification || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (showNotification || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             String downloadCompleted = getResources().getString(R.string.download_completed);
             String clickHint = getResources().getString(R.string.click_hint);
             NotificationUtil.showDoneNotification(this, smallIcon, downloadCompleted, clickHint, authorities, apk);
@@ -206,31 +203,22 @@ public final class DownloadService extends Service implements OnDownloadListener
                     Toast.makeText(DownloadService.this, R.string.background_downloading, Toast.LENGTH_SHORT).show();
                     break;
                 case 1:
-                    for (OnDownloadListener listener : listeners) {
-                        listener.start();
-                    }
+                    onDownloadListener.start();
                     break;
                 case 2:
-                    for (OnDownloadListener listener : listeners) {
-                        listener.downloading(msg.arg1, msg.arg2);
-                    }
+                    int obj = (int) msg.obj;
+                    onDownloadListener.downloading(obj);
                     break;
                 case 3:
-                    for (OnDownloadListener listener : listeners) {
-                        listener.done((File) msg.obj);
-                    }
+                    onDownloadListener.done((File) msg.obj);
                     //执行了完成开始释放资源
                     releaseResources();
                     break;
                 case 4:
-                    for (OnDownloadListener listener : listeners) {
-                        listener.cancel();
-                    }
+                    onDownloadListener.cancel();
                     break;
                 case 5:
-                    for (OnDownloadListener listener : listeners) {
-                        listener.error((Exception) msg.obj);
-                    }
+                    onDownloadListener.error((Exception) msg.obj);
                     break;
                 default:
                     break;
@@ -248,7 +236,7 @@ public final class DownloadService extends Service implements OnDownloadListener
             handler.removeCallbacksAndMessages(null);
         }
         stopSelf();
-        downloadManager.release();
+//        downloadManager.release();
     }
 
 

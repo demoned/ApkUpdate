@@ -1,15 +1,12 @@
 package com.demons.update.config;
 
 import android.app.NotificationChannel;
+import android.support.annotation.ColorInt;
 
 import com.demons.update.base.BaseHttpDownloadManager;
 import com.demons.update.listener.OnButtonClickListener;
 import com.demons.update.listener.OnDownloadListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import androidx.annotation.ColorInt;
 
 /**
  * 版本更新的一些配置信息,配置一些必须要的默认信息
@@ -38,7 +35,7 @@ public class UpdateConfiguration {
     /**
      * 下载过程回调
      */
-    private List<OnDownloadListener> onDownloadListeners = new ArrayList<>();
+    private OnDownloadListener onDownloadListeners;
     /**
      * 按钮点击事件回调
      */
@@ -122,14 +119,14 @@ public class UpdateConfiguration {
      * 设置下载监听器
      */
     public UpdateConfiguration setOnDownloadListener(OnDownloadListener onDownloadListener) {
-        this.onDownloadListeners.add(onDownloadListener);
+        this.onDownloadListeners = onDownloadListener;
         return this;
     }
 
     /**
      * 获取下载监听器
      */
-    public List<OnDownloadListener> getOnDownloadListener() {
+    public OnDownloadListener getOnDownloadListener() {
         return onDownloadListeners;
     }
 

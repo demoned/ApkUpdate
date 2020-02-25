@@ -15,10 +15,9 @@ public interface OnDownloadListener {
     /**
      * 下载中
      *
-     * @param max      总进度
-     * @param progress 当前进度
+     * @param progressPercent 当前进度
      */
-    void downloading(int max, int progress);
+    void downloading(int progressPercent);
 
     /**
      * 下载完成

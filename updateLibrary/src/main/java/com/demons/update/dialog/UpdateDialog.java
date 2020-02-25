@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -28,8 +29,6 @@ import com.demons.update.utils.DensityUtil;
 import com.demons.update.utils.ScreenUtil;
 
 import java.io.File;
-
-import androidx.annotation.NonNull;
 
 /**
  * 显示升级对话框
@@ -186,10 +185,9 @@ public class UpdateDialog extends Dialog implements View.OnClickListener, OnDown
     }
 
     @Override
-    public void downloading(int max, int progress) {
-        if (max != -1 && progressBar.getVisibility() == View.VISIBLE) {
-            int curr = (int) (progress / (double) max * 100.0);
-            progressBar.setProgress(curr);
+    public void downloading(int progressPercent) {
+        if (progressBar.getVisibility() == View.VISIBLE) {
+            progressBar.setProgress(progressPercent);
         } else {
             progressBar.setVisibility(View.GONE);
         }
