@@ -13,8 +13,9 @@ import java.io.File;
 
 
 public class MainActivity extends AppCompatActivity implements OnDownloadListener {
-    public static final String APK_NAME = "healthcareunit.apk";//apk名称
-    private String url = "http://chm.lpyy8686.com/phs/healthy/app/2_v1.0.0.2_(09_20_0907)_HealthCareUnit_Official_release.apk";
+    public static final String APK_NAME = "ApkUpdate.apk";//apk名称
+//    private String url = "http://chm.lpyy8686.com/phs/healthy/app/2_v1.0.0.2_(09_20_0907)_HealthCareUnit_Official_release.apk";
+    private String url ="http://oss.pgyer.com/7c36a36f24feb2917baa9f126f6dc1a6.apk?auth_key=1582731737-f88eef1ac1d487d9bffa5dff848770db-0-0f3b81898519a8e9677e5f370032595f&response-content-disposition=attachment%3B+filename%3Dapp-debug.apk";
     private DownloadManager manager;
     private TextView progress;
 
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements OnDownloadListene
                 .setOnDownloadListener(this);
         manager = DownloadManager.getInstance(MainActivity.this)
                 .setApkName(APK_NAME)
+                .setApkMD5("A9ECF2A7A37B7E20888EC6CE5C2AE369")
                 .setConfiguration(configuration)
                 .setApkUrl(url)
                 .setSmallIcon(R.mipmap.ic_launcher);

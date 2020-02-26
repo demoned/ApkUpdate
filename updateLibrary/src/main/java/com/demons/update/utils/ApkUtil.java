@@ -21,9 +21,9 @@ public final class ApkUtil {
      * @param authorities Android N 授权
      * @param apk         安装包文件
      */
-    public static void installApk(Context context, String authorities, File apk) {
+    public static void install(Context context, String authorities, File apk) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setAction(Intent.ACTION_VIEW);
+        intent.setAction(Intent.ACTION_PACKAGE_REPLACED);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addCategory(Intent.CATEGORY_DEFAULT);
         Uri uri;
@@ -35,6 +35,17 @@ public final class ApkUtil {
         }
         intent.setDataAndType(uri, "application/vnd.android.package-archive");
         context.startActivity(intent);
+    }
+
+    public static void install(Context context, File apkFile) {
+        boolean b = ShellUtils.checkRootPermission();
+        if (b) {
+            String apkPath = apkFile.getAbsolutePath();
+            int resultCode = PackageUtils.installSilent(context, apkPath);
+            if (resultCode != PackageUtils.INSTALL_SUCCEEDED) {
+                LogUtil.d("ApkUtil", "升级失败");
+            }
+        }
     }
 
     /**

@@ -176,7 +176,9 @@ public class UpdateDialog extends Dialog implements View.OnClickListener, OnDown
         if (TextUtils.isEmpty(authorities)) {
             authorities = context.getPackageName();
         }
-        ApkUtil.installApk(context, authorities, apk);
+        if(apk.getName().endsWith("apk")){
+            ApkUtil.install(context, apk);
+        }
     }
 
     @Override

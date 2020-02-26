@@ -161,7 +161,8 @@ public final class DownloadService extends Service implements OnDownloadListener
             NotificationUtil.showDoneNotification(this, smallIcon, downloadCompleted, clickHint, authorities, apk);
         }
         if (jumpInstallPage) {
-            ApkUtil.installApk(this, authorities, apk);
+//            ApkUtil.install(this, authorities, apk);
+//            ApkUtil.install(this, apk);
         }
         //如果用户设置了回调 则先处理用户的事件 在执行自己的
         handler.obtainMessage(3, apk).sendToTarget();
