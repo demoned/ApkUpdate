@@ -197,6 +197,7 @@ public class UpdateDialog extends Dialog implements View.OnClickListener, OnDown
 
     @Override
     public void done(File apk) {
+        context.stopService(new Intent(context, DownloadService.class));
         this.apk = apk;
         if (forcedUpgrade) {
             update.setTag(install);
