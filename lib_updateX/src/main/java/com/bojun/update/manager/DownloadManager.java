@@ -1,5 +1,6 @@
 package com.bojun.update.manager;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
@@ -8,7 +9,6 @@ import android.widget.Toast;
 import com.bojun.update.R;
 import com.bojun.update.base.BaseHttpDownloadManager;
 import com.bojun.update.config.UpdateConfiguration;
-import com.bojun.update.dialog.UpdateDialog;
 import com.bojun.update.service.DownloadService;
 import com.bojun.update.utils.ApkUtil;
 import com.bojun.update.utils.Constant;
@@ -76,7 +76,7 @@ public class DownloadManager {
     /**
      * 内置对话框
      */
-    private UpdateDialog dialog;
+    private Dialog dialog;
 
     private static DownloadManager manager;
 
@@ -299,8 +299,13 @@ public class DownloadManager {
     /**
      * 获取内置对话框
      */
-    public UpdateDialog getDefaultDialog() {
+    public Dialog getDefaultDialog() {
         return dialog;
+    }
+
+    public DownloadManager setDialog(Dialog dialog) {
+        this.dialog = dialog;
+        return this;
     }
 
     /**
@@ -316,8 +321,9 @@ public class DownloadManager {
         } else {
             //对版本进行判断，是否显示升级对话框
             if (apkVersionCode > ApkUtil.getVersionCode(context)) {
-                dialog = new UpdateDialog(context);
-                dialog.show();
+                if (null != dialog) {
+                    dialog.show();
+                }
             } else {
                 if (showNewerToast) {
                     Toast.makeText(context, R.string.latest_version, Toast.LENGTH_SHORT).show();

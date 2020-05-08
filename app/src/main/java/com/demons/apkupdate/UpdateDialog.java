@@ -1,4 +1,4 @@
-package com.bojun.update.dialog;
+package com.demons.apkupdate;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -19,8 +19,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.bojun.update.R;
 import com.bojun.update.config.UpdateConfiguration;
+import com.bojun.update.dialog.NumberProgressBar;
 import com.bojun.update.listener.OnButtonClickListener;
 import com.bojun.update.listener.OnDownloadListener;
 import com.bojun.update.manager.DownloadManager;

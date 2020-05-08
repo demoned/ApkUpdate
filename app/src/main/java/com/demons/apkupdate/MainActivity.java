@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements OnDownloadListene
                 .setApkSize("20.4")
                 .setApkDescription(getString(R.string.dialog_msg))
 //                .setApkMD5("DC501F04BBAA458C9DC33008EFED5E7F")
+                .setDialog(new UpdateDialog(this))
                 .download();
     }
 
