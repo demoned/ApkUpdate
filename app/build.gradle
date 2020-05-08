@@ -20,7 +20,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(path: ':updateLibrary')
+//    implementation project(path: ':updateLibrary')
     implementation 'com.android.support:appcompat-v7:28.0.0'
-//    implementation'com.github.demoned:ApkUpdate:v1.1'
+    implementation project(':lib_updateX')
 }

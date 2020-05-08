@@ -1,42 +1,133 @@
 package com.demons.apkupdate;
 
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
-import com.demons.update.config.UpdateConfiguration;
-import com.demons.update.listener.OnDownloadListener;
-import com.demons.update.manager.DownloadManager;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.bojun.update.config.UpdateConfiguration;
+import com.bojun.update.dialog.NumberProgressBar;
+import com.bojun.update.listener.OnButtonClickListener;
+import com.bojun.update.listener.OnDownloadListener;
+import com.bojun.update.manager.DownloadManager;
 
 import java.io.File;
 
 
-public class MainActivity extends AppCompatActivity implements OnDownloadListener {
-    public static final String APK_NAME = "ApkUpdate.apk";//apk名称
-//    private String url = "http://chm.lpyy8686.com/phs/healthy/app/2_v1.0.0.2_(09_20_0907)_HealthCareUnit_Official_release.apk";
-    private String url ="http://oss.pgyer.com/7c36a36f24feb2917baa9f126f6dc1a6.apk?auth_key=1582731737-f88eef1ac1d487d9bffa5dff848770db-0-0f3b81898519a8e9677e5f370032595f&response-content-disposition=attachment%3B+filename%3Dapp-debug.apk";
+public class MainActivity extends AppCompatActivity implements OnDownloadListener, View.OnClickListener, OnButtonClickListener {
+    private NumberProgressBar progressBar;
     private DownloadManager manager;
-    private TextView progress;
+    private String url = "https://89e03ca66219bbe3cf0d65cd0d800c50.dd.cdntips.com/imtt.dd.qq.com/16891/apk/86E914A33DAF7E2B88725E486E907288.apk?mkey=5e8b026fb79c5ff3&f=1026&fsname=com.estrongs.android.pop_4.2.2.3_10063.apk&csr=1bbd&cip=183.156.121.6&proto=https";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        progress = findViewById(R.id.progress);
-        initDownload(url);
+        setTitle(R.string.app_title);
+        progressBar = findViewById(R.id.number_progress_bar);
+        findViewById(R.id.btn_1).setOnClickListener(this);
+        findViewById(R.id.btn_2).setOnClickListener(this);
+        findViewById(R.id.btn_3).setOnClickListener(this);
+        findViewById(R.id.btn_4).setOnClickListener(this);
+        //删除旧安装包
+//        boolean b = ApkUtil.deleteOldApk(this, getExternalCacheDir().getPath() + "/ESFileExplorer.apk");
     }
 
-    private void initDownload(String url) {
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_1:
+                startUpdate1();
+                break;
+            case R.id.btn_2:
+                startUpdate2();
+                break;
+            case R.id.btn_3:
+                startUpdate3();
+                break;
+            case R.id.btn_4:
+                if (manager != null) {
+                    manager.cancel();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void startUpdate1() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.dialog_title)
+                .setMessage(R.string.dialog_msg)
+                .setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        progressBar.setProgress(0);
+                        manager = DownloadManager.getInstance(MainActivity.this);
+                        manager.setApkName("ESFileExplorer.apk")
+                                .setApkUrl(url)
+                                .setSmallIcon(R.mipmap.ic_launcher)
+                                .download();
+                    }
+                }).create().show();
+    }
+
+    private void startUpdate2() {
+        progressBar.setProgress(0);
+        manager = DownloadManager.getInstance(MainActivity.this);
+        manager.setApkName("ESFileExplorer.apk")
+                .setApkUrl(url)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .download();
+    }
+
+    private void startUpdate3() {
+        /*
+         * 整个库允许配置的内容
+         * 非必选
+         */
         UpdateConfiguration configuration = new UpdateConfiguration()
+                //输出错误日志
+                .setEnableLog(true)
+                //设置自定义的下载
+                //.setHttpManager()
+                //下载完成自动跳动安装页面
+                .setJumpInstallPage(true)
+                //设置对话框背景图片 (图片规范参照demo中的示例图)
+                //.setDialogImage(R.drawable.ic_dialog)
+                //设置按钮的颜色
+                //.setDialogButtonColor(Color.parseColor("#E743DA"))
+                //设置对话框强制更新时进度条和文字的颜色
+                //.setDialogProgressBarColor(Color.parseColor("#E743DA"))
+                //设置按钮的文字颜色
+                .setDialogButtonTextColor(Color.WHITE)
+                //设置是否显示通知栏进度
+                .setShowNotification(true)
+                //设置是否提示后台下载toast
+                .setShowBgdToast(false)
+                //设置强制更新
+                .setForcedUpgrade(true)
+                //设置对话框按钮的点击监听
+                .setButtonClickListener(this)
                 //设置下载过程的监听
                 .setOnDownloadListener(this);
-        manager = DownloadManager.getInstance(MainActivity.this)
-                .setApkName(APK_NAME)
-                .setApkMD5("A9ECF2A7A37B7E20888EC6CE5C2AE369")
-                .setConfiguration(configuration)
+
+        manager = DownloadManager.getInstance(this);
+        manager.setApkName("ESFileExplorer.apk")
                 .setApkUrl(url)
-                .setSmallIcon(R.mipmap.ic_launcher);
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setShowNewerToast(true)
+                .setConfiguration(configuration)
+                .setApkVersionCode(2)
+                .setApkVersionName("2.1.8")
+                .setApkSize("20.4")
+                .setApkDescription(getString(R.string.dialog_msg))
+//                .setApkMD5("DC501F04BBAA458C9DC33008EFED5E7F")
+                .download();
     }
 
     @Override
@@ -45,8 +136,10 @@ public class MainActivity extends AppCompatActivity implements OnDownloadListene
     }
 
     @Override
-    public void downloading(int progressPercent) {
-        progress.setText(progressPercent + "%");
+    public void downloading(int max, int progress) {
+        int curr = (int) (progress / (double) max * 100.0);
+        progressBar.setMax(100);
+        progressBar.setProgress(curr);
     }
 
     @Override
@@ -64,15 +157,9 @@ public class MainActivity extends AppCompatActivity implements OnDownloadListene
 
     }
 
-    public void start(View view) {
-        manager.download();
+    @Override
+    public void onButtonClick(int id) {
+        Log.e("TAG", String.valueOf(id));
     }
 
-    public void cancel(View view) {
-        manager.cancel();
-    }
-
-    public void pause(View view) {
-
-    }
 }

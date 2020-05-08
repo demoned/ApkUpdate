@@ -1,2 +1,2 @@
-include ':app',':updateLibrary'
+include ':app','lib_updateX'
 rootProject.name='ApkUpdate'
